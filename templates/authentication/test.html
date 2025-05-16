@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>JWT API テストページ</title>
+</head>
+<body>
+  <h1>JWT 認証 API テスト</h1>
+
+  <section>
+    <h2>ログイン</h2>
+    <input id="username" placeholder="username" /><br>
+    <input type="password" id="password" placeholder="password" /><br>
+    <button onclick="login()">Login</button><br>
+    <pre id="loginResult"></pre>
+  </section>
+
+  <section>
+    <h2>トークン更新</h2>
+    <input id="refreshToken" placeholder="refresh token" /><br>
+    <button onclick="refresh()">Refresh</button><br>
+    <pre id="refreshResult"></pre>
+  </section>
+
+  <section>
+    <h2>ログアウト</h2>
+    <input id="logoutToken" placeholder="refresh token" /><br>
+    <button onclick="logout()">Logout</button><br>
+    <pre id="logoutResult"></pre>
+  </section>
+
+  <section>
+    <h2>ユーザー情報取得</h2>
+    <input id="accessToken" placeholder="access token" /><br>
+    <button onclick="getUser()">Get User</button><br>
+    <pre id="userResult"></pre>
+  </section>
+
+  <script>
+    const base = window.location.origin + '/auth';
+
+    async function login() {
+      const body = {
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+      };
+      const res = await fetch(base + '/token/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      document.getElementById('loginResult').textContent = await res.text();
+    }
+
+    async function refresh() {
+      const body = { refresh: document.getElementById('refreshToken').value };
+      const res  = await fetch(base + '/token/refresh/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      document.getElementById('refreshResult').textContent = await res.text();
+    }
+
+    async function logout() {
+      const body = { refresh: document.getElementById('logoutToken').value };
+      const res  = await fetch(base + '/logout/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      document.getElementById('logoutResult').textContent =
+        res.status === 204 ? 'ログアウト成功' : await res.text();
+    }
+
+    async function getUser() {
+      const token = document.getElementById('accessToken').value;
+      const res   = await fetch(base + '/user/', {
+        headers: { 'Authorization': 'Bearer ' + token }
+      });
+      document.getElementById('userResult').textContent = await res.text();
+    }
+  </script>
+</body>
+</html>
