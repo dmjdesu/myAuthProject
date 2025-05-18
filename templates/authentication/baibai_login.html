@@ -1,0 +1,69 @@
+{# templates/authentication/baibai_login.html #}
+{% extends 'base.html' %}
+{% block title %}売買システム ログイン{% endblock %}
+
+{% block content %}
+  <h2>売買システム ログイン</h2>
+
+  <div id="login-error" style="color: red;"></div>
+
+  <form id="baibai-login-form" method="post" action="{% url 'authentication:baibai_login_api' %}">
+    {% csrf_token %}
+    {{ form.client_id }}  {# hidden field #}
+    <div>
+      {{ form.username.label_tag }}<br>
+      {{ form.username }}
+    </div>
+    <div>
+      {{ form.password.label_tag }}<br>
+      {{ form.password }}
+    </div>
+    <button type="submit">ログイン</button>
+  </form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function(){
+    const form     = document.getElementById('baibai-login-form');
+    const errorDiv = document.getElementById('login-error');
+
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      errorDiv.textContent = '';
+
+      // フォームデータをJSON化
+      const fd = new FormData(form);
+      const payload = {};
+      fd.forEach((v,k) => { payload[k] = v; });
+
+      try {
+        const resp = await fetch(form.action, {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+          },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await resp.json();
+
+        if (resp.ok && data.redirect) {
+          // 成功時はリダイレクト先へ飛ばす
+          window.location.href = data.redirect;
+        } else if (data.errors) {
+          // エラーメッセージを列挙
+          errorDiv.innerHTML = data.errors.map(err=>`<p>${err}</p>`).join('');
+        } else {
+          errorDiv.textContent = 'ログインに失敗しました。';
+        }
+      } catch(err) {
+        console.error(err);
+        errorDiv.textContent = '通信エラーが発生しました。';
+      }
+    });
+  })();
+</script>
+{% endblock %}

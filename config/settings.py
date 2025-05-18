@@ -38,30 +38,28 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'rest_framework',
-    'rest_framework_simplejwt.token_blacklist',
     'django.contrib.sites',
+    'oauth2_provider',
     'config',
+    'authentication',
 ]
 
 SITE_ID = 1
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
+    'oauth2_provider.backends.OAuth2Backend',
 ]
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-}
-
-from datetime import timedelta
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
-    'ROTATE_REFRESH_TOKENS': False,
-    'BLACKLIST_AFTER_ROTATION': True,
-}
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  # ←追加
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',                 # 保護された API の既定
+    ],
+ }
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -144,3 +142,21 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+OAUTH2_PROVIDER = {
+    # アクセストークンの有効期限
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 3600,
+    # 認可コードの有効期限
+    'AUTHORIZATION_CODE_EXPIRE_SECONDS': 300,
+    # スコープの定義例
+    'SCOPES': {
+        'read': '読み取り専用',
+        'write': '書き込み可',
+    },
+    # リフレッシュトークンを使う場合
+    'ROTATE_REFRESH_TOKEN': True,
+}
+
+AUTH_USER_MODEL = 'authentication.User'
+
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'

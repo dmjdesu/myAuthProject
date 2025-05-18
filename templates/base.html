@@ -1,0 +1,42 @@
+{# templates/base.html #}
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}MyAuthProject{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <header>
+    <nav class="navbar">
+      <ul>
+        <li><a href="/">ホーム</a></li>
+        <li><a href="{% url 'authentication:chukai_login' %}">仲介ログイン</a></li>
+        <li><a href="{% url 'authentication:baibai_login' %}">売買ログイン</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer>
+    <p>&copy; {% now "Y" %} MyAuthProject</p>
+  </footer>
+
+  <script src="{% static 'js/main.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

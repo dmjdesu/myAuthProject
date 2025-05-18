@@ -17,8 +17,11 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from authentication.views import CheckedAuthorizationView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path('o/authorize/', CheckedAuthorizationView.as_view(), name="authorize"),
+    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('auth/', include('authentication.urls')),
 ]

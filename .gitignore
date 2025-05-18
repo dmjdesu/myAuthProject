@@ -1,0 +1,29 @@
+# 仮想環境ディレクトリ
+venv/
+.venv/
+
+# Python バイトコード
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 一時ファイル、IDE/エディタ固有ファイル
+*.swp
+*.swo
+*.tmp
+*.log
+
+# macOS Finder
+.DS_Store
+
+# myAuthProject 固有?
+db.sqlite3
+
+# VSCode
+.vscode/
+
+# PyCharm
+.idea/
+
+# dotenv
+.env
